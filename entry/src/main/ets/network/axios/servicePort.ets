@@ -1,0 +1,1 @@
+export const _API = "/ye-space-api"
