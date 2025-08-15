@@ -2,19 +2,22 @@ import { FriendPage } from './FriendPage';
 import { HomePage } from './HomePage';
 import { Mine } from './Mine';
 import { PostPage } from './PostPage';
-import { Font } from '@kit.ArkUI';
+import { AppStorageV2, Font } from '@kit.ArkUI';
+import { User } from '../module/user';
 
 @Builder
 export function LayoutBuilder() {
   Layout();
 }
 
-@ComponentV2
+@Component
 struct Layout {
   private tabsController: TabsController = new TabsController();
-  @Local currentIndex: number = 0;
-  pathStack: NavPathStack = new NavPathStack();
+  @State currentIndex: number = 0;
+  pathStack: NavPathStack = AppStorageV2.connect(NavPathStack, 'navStack',() => new NavPathStack())!
   font: Font = new Font();
+  @StorageLink('user')
+  user: User | undefined = AppStorage.get('user')
 
   aboutToAppear(): void {
     // 注册字体
@@ -22,6 +25,9 @@ struct Layout {
       familyName: '阿里汉仪智能黑体',
       familySrc: $rawfile('fonts/阿里汉仪智能黑体.ttf')
     })
+    if(!this.user){
+      this.pathStack.pushPathByName("Login", null, true);
+    }
   }
 
   @Builder

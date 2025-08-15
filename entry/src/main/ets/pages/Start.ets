@@ -8,11 +8,12 @@ export function StartBuilder() {
 struct Start {
   // 控制跳转的对象
   pathStack: NavPathStack = new NavPathStack();
+  private timerId: number = 0;
 
   // 过 3 秒中自动跳转到 Layout -> Start 页面打开计时 3秒后跳转
   // 生命周期,组件即将显示时，build() 函数执行前
   aboutToAppear(): void {
-    setTimeout(() => {
+    this.timerId = setTimeout(() => {
       this.pathStack.replacePathByName("Layout", null, false);
     }, 2000);
   }
@@ -34,6 +35,7 @@ struct Start {
           .backgroundColor(Color.Grey)
           .margin(15)
           .onClick(() => {
+            clearTimeout(this.timerId)
             // 不支持返回的用 replace
             this.pathStack.replacePathByName("Layout", null, false);
           })
