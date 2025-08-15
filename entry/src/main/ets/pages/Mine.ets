@@ -13,6 +13,17 @@ export struct Mine {
   user: User | undefined = AppStorage.get('user')
   pathStack: NavPathStack = AppStorageV2.connect(NavPathStack, 'navStack', () => new NavPathStack())!
 
+  async logout() {
+    try {
+      await logoutApi()
+    } catch (e) {
+      console.log(e)
+    } finally {
+      AppStorage.setOrCreate('user', null)
+      this.pathStack.pushPathByName("Login", null, true);
+    }
+  }
+
   build() {
     Column({ space: 5 }) {
       Column() {
@@ -55,6 +66,8 @@ export struct Mine {
         } else {
           Text(this.user.nickname)
           Text(this.user.slogan)
+            .maxLines(1)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
             .fontSize(12)
             .fontWeight(400)
             .fontFamily('HarmonyHeiTi-Medium')
@@ -62,10 +75,7 @@ export struct Mine {
             .lineHeight(14)
           Button("退出登录")
             .onClick(() => {
-              logoutApi().then(() => {
-                AppStorage.setOrCreate('user', null)
-                this.pathStack.pushPathByName("Login", null, true);
-              })
+              this.logout()
             })
         }
       }

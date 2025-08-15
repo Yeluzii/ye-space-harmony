@@ -52,7 +52,7 @@ struct Login {
     try {
       const res = await codeLoginApi(this.codeLoginForm)
       this.user = new User(res.data.pkId, res.data.phone, res.data.nickname, res.data.slogan, res.data.avatar,
-      res.data.createTime, res.data.tips, res.data.accessToken)
+        res.data.createTime, res.data.tips, res.data.accessToken)
       AppStorage.setOrCreate('user', this.user)
       this.toast.showToast({
         message: "登录成功",
@@ -60,6 +60,13 @@ struct Login {
         alignment: Alignment.Top
       })
       this.pathStack.pop()
+      if (res.data.tips) {
+        this.toast.showToast({
+          message: res.data.tips,
+          duration: 10000,
+          alignment: Alignment.Center
+        })
+      }
     } catch (e) {
       this.toast.showToast({
         message: "登录失败",
@@ -68,7 +75,6 @@ struct Login {
       })
     }
   }
-
   @State
   countDown: number = 0
   @State
@@ -86,7 +92,6 @@ struct Login {
       }
     }, 1000);
   }
-
   // 发送验证码
   sendCode = async () => {
     try {

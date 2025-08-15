@@ -2,6 +2,7 @@ import { FriendPage } from './FriendPage';
 import { HomePage } from './HomePage';
 import { Mine } from './Mine';
 import { PostPage } from './PostPage';
+import { Font } from '@kit.ArkUI';
 
 @Builder
 export function LayoutBuilder() {
@@ -13,6 +14,15 @@ struct Layout {
   private tabsController: TabsController = new TabsController();
   @Local currentIndex: number = 0;
   pathStack: NavPathStack = new NavPathStack();
+  font: Font = new Font();
+
+  aboutToAppear(): void {
+    // 注册字体
+    this.font.registerFont({
+      familyName: '阿里汉仪智能黑体',
+      familySrc: $rawfile('fonts/阿里汉仪智能黑体.ttf')
+    })
+  }
 
   @Builder
   tabBarBuilder(title: string, targetIndex: number, selectedIcon: Resource, unselectIcon: Resource) {
@@ -20,7 +30,7 @@ struct Layout {
       Image(this.currentIndex === targetIndex ? selectedIcon : unselectIcon)
         .width(24)
       Text(title)
-        .fontFamily('HarmonyHeiTi-Medium')
+        .fontFamily('阿里汉仪智能黑体')
         .fontSize(14)
         .fontColor(this.currentIndex === targetIndex ? '#0A59F7' : '#63AAAA')
         .textAlign(TextAlign.Center)
@@ -43,21 +53,28 @@ struct Layout {
         TabContent() {
           HomePage()
         }
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+        .backgroundColor('#F6F6F6')
         .tabBar(this.tabBarBuilder('主页', 0, $r('app.media.home_blue_selected'), $r('app.media.home')))
-
-        TabContent() {
-          FriendPage()
-        }
-        .tabBar(this.tabBarBuilder('好友', 1, $r('app.media.friends_blue_selected'), $r('app.media.friends')))
 
         TabContent() {
           PostPage()
         }
-        .tabBar(this.tabBarBuilder('动态', 2, $r('app.media.post_blue_selected'), $r('app.media.post')))
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+        .backgroundColor('#F6F6F6')
+        .tabBar(this.tabBarBuilder('动态', 1, $r('app.media.post_blue_selected'), $r('app.media.post')))
+
+        TabContent() {
+          FriendPage()
+        }
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+        .backgroundColor('#F6F6F6')
+        .tabBar(this.tabBarBuilder('好友', 2, $r('app.media.friends_blue_selected'), $r('app.media.friends')))
 
         TabContent() {
           Mine()
         }
+        .backgroundColor('#F6F6F6')
         .tabBar(this.tabBarBuilder('我的', 3, $r('app.media.mine_blue_selected'), $r('app.media.mine')))
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
       }
