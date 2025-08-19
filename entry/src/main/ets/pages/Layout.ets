@@ -5,6 +5,13 @@ import { PostPage } from './PostPage';
 import { AppStorageV2, Font } from '@kit.ArkUI';
 import { User } from '../module/user';
 
+interface TabClass {
+  title: string;
+  targetIndex: number;
+  selectedIcon: Resource;
+  unselectIcon: Resource;
+}
+
 @Builder
 export function LayoutBuilder() {
   Layout();
@@ -14,10 +21,11 @@ export function LayoutBuilder() {
 struct Layout {
   private tabsController: TabsController = new TabsController();
   @State currentIndex: number = 0;
-  pathStack: NavPathStack = AppStorageV2.connect(NavPathStack, 'navStack',() => new NavPathStack())!
+  pathStack: NavPathStack = AppStorageV2.connect(NavPathStack, 'navStack', () => new NavPathStack())!
   font: Font = new Font();
-  @StorageLink('user')
-  user: User | undefined = AppStorage.get('user')
+
+  // @StorageLink('user')
+  // user: User | undefined = AppStorage.get('user')
 
   aboutToAppear(): void {
     // 注册字体
@@ -25,10 +33,37 @@ struct Layout {
       familyName: '阿里汉仪智能黑体',
       familySrc: $rawfile('fonts/阿里汉仪智能黑体.ttf')
     })
-    if(!this.user){
-      this.pathStack.pushPathByName("Login", null, true);
-    }
+    // if(!this.user){
+    //   this.pathStack.pushPathByName("Login", null, true);
+    // }
   }
+
+  tabsData: TabClass[] = [
+    {
+      title: '主页',
+      targetIndex: 0,
+      selectedIcon: $r('app.media.home_blue_selected'),
+      unselectIcon: $r('app.media.home'),
+    },
+    {
+      title: '动态',
+      targetIndex: 1,
+      selectedIcon: $r('app.media.post_blue_selected'),
+      unselectIcon: $r('app.media.post'),
+    },
+    {
+      title: '好友',
+      targetIndex: 2,
+      selectedIcon: $r('app.media.friends_blue_selected'),
+      unselectIcon: $r('app.media.friends'),
+    },
+    {
+      title: '我的',
+      targetIndex: 3,
+      selectedIcon: $r('app.media.mine_blue_selected'),
+      unselectIcon: $r('app.media.mine'),
+    }
+  ]
 
   @Builder
   tabBarBuilder(title: string, targetIndex: number, selectedIcon: Resource, unselectIcon: Resource) {
@@ -55,34 +90,22 @@ struct Layout {
   build() {
     NavDestination() {
       Tabs({ barPosition: BarPosition.End, controller: this.tabsController }) {
-
-        TabContent() {
-          HomePage()
-        }
-        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-        .backgroundColor('#F6F6F6')
-        .tabBar(this.tabBarBuilder('主页', 0, $r('app.media.home_blue_selected'), $r('app.media.home')))
-
-        TabContent() {
-          PostPage()
-        }
-        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-        .backgroundColor('#F6F6F6')
-        .tabBar(this.tabBarBuilder('动态', 1, $r('app.media.post_blue_selected'), $r('app.media.post')))
-
-        TabContent() {
-          FriendPage()
-        }
-        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-        .backgroundColor('#F6F6F6')
-        .tabBar(this.tabBarBuilder('好友', 2, $r('app.media.friends_blue_selected'), $r('app.media.friends')))
-
-        TabContent() {
-          Mine()
-        }
-        .backgroundColor('#F6F6F6')
-        .tabBar(this.tabBarBuilder('我的', 3, $r('app.media.mine_blue_selected'), $r('app.media.mine')))
-        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+        ForEach(this.tabsData, (item: TabClass) => {
+          TabContent() {
+            if (item.targetIndex === 0) {
+              HomePage()
+            } else if (item.targetIndex === 1) {
+              PostPage()
+            } else if (item.targetIndex === 2) {
+              FriendPage()
+            } else if (item.targetIndex === 3) {
+              Mine()
+            }
+          }
+          .tabBar(this.tabBarBuilder(item.title, item.targetIndex, item.selectedIcon, item.unselectIcon))
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+          .backgroundColor('#F6F6F6')
+        })
       }
       .divider({
         strokeWidth: '2vp',
