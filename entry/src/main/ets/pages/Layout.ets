@@ -103,7 +103,7 @@ struct Layout {
             }
           }
           .tabBar(this.tabBarBuilder(item.title, item.targetIndex, item.selectedIcon, item.unselectIcon))
-          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
           .backgroundColor('#F6F6F6')
         })
       }

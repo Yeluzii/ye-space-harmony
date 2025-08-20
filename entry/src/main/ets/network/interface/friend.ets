@@ -9,7 +9,7 @@ export namespace Friend {
     friendId: number;
     phone: string;
     nickname: string;
-    note: string;
+    note?: string | null;
     slogan: string;
     avatar: string;
     createTime: string;

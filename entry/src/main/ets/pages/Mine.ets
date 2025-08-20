@@ -68,6 +68,7 @@ export struct Mine {
           Text(this.user.slogan)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
+            .ellipsisMode(EllipsisMode.END)
             .fontSize(12)
             .fontWeight(400)
             .fontFamily('HarmonyHeiTi-Medium')
@@ -80,7 +81,7 @@ export struct Mine {
         }
       }
       .margin({ top: '60vp' })
-      .width('100%')
+      .width('80%')
       .layoutWeight(1)
     }
     .width('100%')
