@@ -60,10 +60,18 @@ export struct HomePage {
         Text(this.time)
           .fontFamily('TanukiMagic')
           .fontSize(50)
+        Text("💕" + this.user?.slogan || "❤️❤️❤️")
+          .fontFamily('TanukiMagic')
+          .fontSize(16)
+          .maxLines(1)
+          .textOverflow({
+            overflow: TextOverflow.Ellipsis
+          })
+          .ellipsisMode(EllipsisMode.END)
       }
       .padding("20vp")
       .border({
-        radius: 10,
+        radius: 16,
         width: 1,
         color: Color.Black,
       })

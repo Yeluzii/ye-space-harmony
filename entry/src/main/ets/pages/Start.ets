@@ -9,39 +9,51 @@ struct Start {
   // 控制跳转的对象
   pathStack: NavPathStack = new NavPathStack();
   private timerId: number = 0;
+  private intervalId: number = 0;
+  @State countdown: number = 3; // 倒计时秒数
 
-  // 过 3 秒中自动跳转到 Layout -> Start 页面打开计时 3秒后跳转
   // 生命周期,组件即将显示时，build() 函数执行前
   aboutToAppear(): void {
+    // 设置倒计时
+    this.intervalId = setInterval(() => {
+      if (this.countdown > 0) {
+        this.countdown -= 1;
+      } else {
+        clearInterval(this.intervalId);
+      }
+    }, 1000);
+
+    // 设置自动跳转
     this.timerId = setTimeout(() => {
+      clearInterval(this.intervalId);
       this.pathStack.replacePathByName("Layout", null, false);
-    }, 2000);
+    }, this.countdown * 1000);
+  }
+
+  // 生命周期,组件即将消失时
+  aboutToDisappear(): void {
+    clearTimeout(this.timerId);
+    clearInterval(this.intervalId);
   }
 
   build() {
     NavDestination() {
-      // Button('点击跳到布局页')
-      //   .onClick(() => {
-      //     this.pathStack.pushPathByName("Layout", null, false);
-      //   })
-
-      // 层叠容器组件 调整内容对齐方式
       Stack({ alignContent: Alignment.TopEnd }) {
         Image($r('app.media.start'))
           .width('100%')
           .height('100%')
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-        Button('跳过')
+
+        Button('跳过(' + this.countdown + 's)')
           .backgroundColor(Color.Grey)
           .margin(15)
           .onClick(() => {
-            clearTimeout(this.timerId)
-            // 不支持返回的用 replace
+            clearTimeout(this.timerId);
+            clearInterval(this.intervalId);
             this.pathStack.replacePathByName("Layout", null, false);
           })
       }
     }
-    // .title('广告页')
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
     })

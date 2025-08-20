@@ -43,6 +43,8 @@ export struct FriendPage {
   friendList: Friend.FriendInfo[] = []
   getAllFriends = async () => {
     try {
+      // 双向绑定，回到 全部好友标签页
+      this.categoryTabIndex = 0
       if (this.user?.accessToken) {
         const res = await getFriendListApi({
           page: this.reqFriendListParams.page,
@@ -77,6 +79,9 @@ export struct FriendPage {
   async aboutToAppear(): Promise<void> {
     await this.getCategories()
   }
+
+  @State
+  categoryTabIndex: number = 0
 
   @Builder
   friendListBuilder() {
@@ -115,6 +120,8 @@ export struct FriendPage {
           }
         })
       }
+      .width('100%')
+      .height('100%')
       .divider({
         strokeWidth: 1,
       })
@@ -131,6 +138,36 @@ export struct FriendPage {
           .width(22)
           .fillColor('#817D83')
         TextInput({ placeholder: '搜索好友...' })
+          .cancelButton({
+            style: CancelButtonStyle.INPUT,
+            icon: {
+              src: $r('app.media.xmark_circle'),
+              size: 20
+            }
+          })
+          .onEditChange((isEditing: boolean) => {
+            // 不在编辑状态并且关键词为空时，回到全部好友标签页并获取全部好友
+            if (!isEditing && this.reqFriendListParams.keywords?.trim() === '') {
+              this.getAllFriends()
+            }
+          })
+          .onSubmit(() => {
+            if (this.categoryTabIndex === 0) {
+              this.getAllFriends()
+            } else {
+              this.getFriendList()
+            }
+          })
+          .enterKeyType(EnterKeyType.Search)
+          .onChange((text: string) => {
+            this.reqFriendListParams.keywords = text
+            // 热搜索
+            if (this.categoryTabIndex === 0) {
+              this.getAllFriends()
+            } else {
+              this.getFriendList()
+            }
+          })
           .backgroundColor(Color.Transparent)
           .placeholderColor('#817D83')
           .padding({ left: 5 })
@@ -147,7 +184,7 @@ export struct FriendPage {
       .border({ radius: 20 })
       .padding({ left: 8, right: 8 })
 
-      Tabs({ barPosition: BarPosition.Start, controller: this.tabsController }) {
+      Tabs({ barPosition: BarPosition.Start, controller: this.tabsController, index: this.categoryTabIndex }) {
         TabContent() {
           this.friendListBuilder()
         }
@@ -181,20 +218,21 @@ export struct FriendPage {
         // 给出底部导航栏的位置，不然 好友列表最后一位 会被底部导航栏覆盖
         bottom: '45vp'
       })
-      // 不用 onChange ，不然 UI 有延迟
-      // .onChange((index: number) => {
-      //   // if (index === 0) {
-      //   //   this.getAllFriends()
-      //   // } else
-      //     if (index !== 0) {
-      //     // 注意：categoryList 的索引需要减 1，因为第一个标签是"全部好友"
-      //     const categoryIndex = index - 1;
-      //     if (categoryIndex < this.categoryList.length) {
-      //       this.reqFriendListParams.categoryId = this.categoryList[categoryIndex].pkId;
-      //     }
-      //     this.getFriendList();
-      //   }
-      // })
+      // 不在 onChange 中获取好友列表逻辑，不然 UI 有延迟，但可以记录 当前好友分组的索引，给搜索默认跳转到全部好友用
+      .onChange((index: number) => {
+        this.categoryTabIndex = index
+        // if (index === 0) {
+        //   this.getAllFriends()
+        // } else
+        //   if (index !== 0) {
+        // 注意：categoryList 的索引需要减 1，因为第一个标签是"全部好友"
+        // const categoryIndex = index - 1;
+        // if (categoryIndex < this.categoryList.length) {
+        //   this.reqFriendListParams.categoryId = this.categoryList[categoryIndex].pkId;
+        // }
+        // this.getFriendList();
+        // }
+      })
       .scrollable(true)
       .vertical(false)
       .barMode(BarMode.Scrollable)
