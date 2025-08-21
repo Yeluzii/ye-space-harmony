@@ -25,13 +25,13 @@ struct Login {
   loginState: boolean = true
   toast: PromptAction = new PromptAction()
   @State
-  user: User = new User(0, "", "", "", "", "", "", "")
+  user: User = new User(0, "", "", "", "", "", "", "", "", "")
   // 账号（手机号）密码登录
   passwordLogin = async () => {
     try {
       const res = await passwordLoginApi(this.passwordLoginForm)
       this.user = new User(res.data.pkId, res.data.phone, res.data.nickname, res.data.slogan, res.data.avatar,
-        res.data.createTime, res.data.tips, res.data.accessToken)
+        res.data.createTime, res.data.tips, res.data.accessToken, res.data.lastLoginTime, res.data.bgImg)
       AppStorage.setOrCreate('user', this.user)
       this.toast.showToast({
         message: "登录成功",
@@ -52,7 +52,7 @@ struct Login {
     try {
       const res = await codeLoginApi(this.codeLoginForm)
       this.user = new User(res.data.pkId, res.data.phone, res.data.nickname, res.data.slogan, res.data.avatar,
-        res.data.createTime, res.data.tips, res.data.accessToken)
+        res.data.createTime, res.data.tips, res.data.accessToken, res.data.lastLoginTime, res.data.bgImg)
       AppStorage.setOrCreate('user', this.user)
       this.toast.showToast({
         message: "登录成功",

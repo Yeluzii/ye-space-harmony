@@ -7,6 +7,8 @@ export class User {
   public createTime: string;
   public tips: string;
   public accessToken: string;
+  public lastLoginTime: string;
+  public bgImg: string;
 
   constructor(
     pkId: number,
@@ -16,7 +18,9 @@ export class User {
     avatar: string,
     createTime: string,
     tips: string,
-    accessToken: string
+    accessToken: string,
+    lastLoginTime: string,
+    bgImg: string
   ) {
     this.pkId = pkId;
     this.phone = phone;
@@ -26,5 +30,7 @@ export class User {
     this.createTime = createTime;
     this.tips = tips;
     this.accessToken = accessToken;
+    this.lastLoginTime = lastLoginTime;
+    this.bgImg = bgImg;
   }
 }

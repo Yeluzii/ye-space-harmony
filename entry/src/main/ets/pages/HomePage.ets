@@ -60,8 +60,8 @@ export struct HomePage {
         Text(this.time)
           .fontFamily('TanukiMagic')
           .fontSize(50)
-        Text("💕" + this.user?.slogan || "❤️❤️❤️")
-          .fontFamily('TanukiMagic')
+        Text(this.user?.slogan ? "💕" + this.user?.slogan : "💕💕💕")
+          .fontFamily('TanukiMagic,HarmonyHeiTi-Medium')
           .fontSize(16)
           .maxLines(1)
           .textOverflow({

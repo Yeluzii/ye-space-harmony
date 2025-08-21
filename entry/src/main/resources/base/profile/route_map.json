@@ -39,6 +39,14 @@
       "data": {
         "description": "this is PostDetail"
       }
+    },
+    {
+      "name": "FriendDetail",
+      "pageSourceFile": "src/main/ets/pages/FriendDetail.ets",
+      "buildFunction": "FriendDetailBuilder",
+      "data": {
+        "description": "this is FriendDetail"
+      }
     }
   ]
 }

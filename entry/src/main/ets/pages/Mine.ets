@@ -28,7 +28,7 @@ export struct Mine {
     Column({ space: 5 }) {
       Column() {
         Stack({ alignContent: Alignment.Bottom }) {
-          Image($r('app.media.user_background'))
+          Image(this.user?.bgImg ?? $r('app.media.user_background'))
             .objectFit(ImageFit.Cover)
             .height('100%')
             .width('100%')
@@ -65,6 +65,8 @@ export struct Mine {
             })
         } else {
           Text(this.user.nickname)
+            .fontSize(24)
+            .fontWeight(600)
           Text(this.user.slogan)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })

@@ -5,6 +5,9 @@ import { User } from '../module/user';
 
 @Component
 export struct FriendPage {
+  @State
+  friendPathInfo: NavPathInfo =
+    AppStorageV2.connect(NavPathInfo, 'friendPathInfo', () => new NavPathInfo("FriendDetail", null))!
   pathStack: NavPathStack = AppStorageV2.connect(NavPathStack, 'navStack', () => new NavPathStack())!
   private tabsController: TabsController = new TabsController();
   toast: PromptAction = new PromptAction()
@@ -76,8 +79,8 @@ export struct FriendPage {
     }
   }
 
-  async aboutToAppear(): Promise<void> {
-    await this.getCategories()
+  aboutToAppear(): void {
+    this.getCategories()
   }
 
   @State
@@ -118,6 +121,10 @@ export struct FriendPage {
             }
             .width('100%')
           }
+          .onClick(() => {
+            this.friendPathInfo.param = item
+            this.pathStack.pushPath(this.friendPathInfo, true)
+          })
         })
       }
       .width('100%')
@@ -243,6 +250,8 @@ export struct FriendPage {
         this.getCategories()
       } else if (!isExpanding && currentRatio == 0) {
         // 内容消失的相关逻辑
+        this.categoryList = []
+        this.friendList = []
       }
     })
     .width('100%')

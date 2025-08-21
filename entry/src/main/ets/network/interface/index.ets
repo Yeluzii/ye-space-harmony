@@ -29,10 +29,12 @@ export namespace Login {
     phone: string;
     code: string;
   }
+
   export interface ReqPasswordLoginParams {
     phone: string;
     password: string;
   }
+
   export interface ResLogin {
     pkId: number;
     phone: string;
@@ -42,5 +44,7 @@ export namespace Login {
     createTime: string;
     tips: string;
     accessToken: string;
+    lastLoginTime: string;
+    bgImg: string
   }
 }

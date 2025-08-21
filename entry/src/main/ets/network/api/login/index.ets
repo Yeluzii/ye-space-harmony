@@ -21,3 +21,8 @@ export const codeLoginApi = (params: Login.ReqCodeLoginParams) => {
 export const logoutApi = () => {
   return http.post<void>(_API + "/auth/logout")
 }
+
+// 刷新token
+export const refreshTokenApi = () => {
+  return http.post<Login.ResLogin>(_API + "/auth/refresh")
+}

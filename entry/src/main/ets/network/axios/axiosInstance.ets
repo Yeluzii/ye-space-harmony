@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "@ohos/axios";
 import { promptAction } from "@kit.ArkUI";
 import { User } from "../../module/user";
+import { refreshTokenApi } from "../api/login";
 
 export const axiosInstance = axios.create(
   {
@@ -27,7 +28,7 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 axiosInstance.interceptors.response.use((response: AxiosResponse) => {
   if (response.data.code == 0) {
     return response.data
-  }else {
+  } else {
     promptAction.showToast({
       message: response.data["msg"],
       duration: 2000,
