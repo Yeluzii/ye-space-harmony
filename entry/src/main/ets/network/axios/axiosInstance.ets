@@ -5,7 +5,7 @@ import { refreshTokenApi } from "../api/login";
 
 export const axiosInstance = axios.create(
   {
-    baseURL: 'http://192.168.50.9:8082',
+    baseURL: 'http://117.72.93.22:8082',
     timeout: 10000,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'

@@ -1,5 +1,6 @@
 import { AppStorageV2 } from "@kit.ArkUI"
 import { PostParams } from "../module/postParams"
+import { Post } from "../network/interface/post"
 
 @Builder
 export function PostDetailBuilder() {
@@ -11,19 +12,12 @@ export struct PostDetail {
   pathStack: NavPathStack = AppStorageV2.connect(NavPathStack, 'navStack', () => new NavPathStack())!
   pathInfo: NavPathInfo = AppStorageV2.connect(NavPathInfo, 'postPathInfo')!
   @State
-  title: string = ''
-
-  aboutToAppear(): void {
-    if (this.pathInfo.param) {
-      const params = this.pathInfo.param as PostParams
-      this.title = params.title
-    }
-  }
+  post: Post.FriendsPost = this.pathInfo.param as Post.FriendsPost
 
   build() {
     NavDestination() {
       Column() {
-        Text(this.title)
+        Text(this.post.content)
       }
     }
     .title("动态详情")
