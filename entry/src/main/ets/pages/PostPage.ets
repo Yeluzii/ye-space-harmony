@@ -56,6 +56,10 @@ export struct PostPage {
                 Text(post.note ?? post.nickname)
                 Text('创建于 ' + post.createTime)
               }
+              .onClick(() => {
+                this.pathInfo.param = post
+                this.pathStack.pushPath(this.pathInfo, true)
+              })
               .alignItems(HorizontalAlign.Start)
             }
             .width('100%')
@@ -66,23 +70,73 @@ export struct PostPage {
                   this.pathInfo.param = post
                   this.pathStack.pushPath(this.pathInfo, true)
                 })
+              // 处理一张图片或视频时
               if (post.mediaUrls.length === 1) {
-                // 处理一张图片或视频时
-                Image(post.mediaUrls[0].url)
-                  .objectFit(ImageFit.Cover)
-                  .width('100%')
-                  .fillColor(Color.Gray)
+                // 处理图片
+                if (post.mediaUrls[0].type === 0) {
+                  Image(post.mediaUrls[0].url)
+                    .alt($r('app.media.picture_damage'))
+                    .objectFit(ImageFit.Cover)
+                    .width('100%')
+                    .fillColor(Color.Gray)
+                } else if (post.mediaUrls[0].type === 1) {
+                  // 处理视频
+                  Video({
+                    src: post.mediaUrls[0].url,
+                  })
+                    .onError(() => {
+                      this.toast.showToast({
+                        message: '视频 ' + post.mediaUrls[0].pkId + ' 加载失败',
+                        duration: 2000,
+                        alignment: Alignment.Center
+                      })
+                    })
+                    .border({
+                      width: 1,
+                      radius: 16,
+                      color: Color.Gray,
+                      style: BorderStyle.Solid
+                    })
+                    .backgroundColor(Color.Gray)
+                    .objectFit(ImageFit.Cover)
+                    .width('100%')
+                    .height('300vp')
+                }
               } else {
                 Grid() {
                   ForEach(post.mediaUrls, (item: Post.imgUrls) => {
                     GridItem({
                       style: GridItemStyle.PLAIN
                     }) {
-                      Image(item.url)
-                        .objectFit(ImageFit.Cover)
-                        .width('100%')
-                        .height('100%')
-                        .fillColor(Color.Gray)
+                      if (item.type === 0) {
+                        Image(item.url)
+                          .alt($r('app.media.picture_damage'))
+                          .objectFit(ImageFit.Cover)
+                          .width('100%')
+                          .height('100%')
+                          .fillColor(Color.Gray)
+                      } else if (item.type === 1) {
+                        Video({
+                          src: item.url,
+                        })
+                          .onError(() => {
+                            this.toast.showToast({
+                              message: '视频 ' + item.pkId + ' 加载失败',
+                              duration: 2000,
+                              alignment: Alignment.Center
+                            })
+                          })
+                          .border({
+                            width: 1,
+                            radius: 16,
+                            color: Color.Gray,
+                            style: BorderStyle.Solid
+                          })
+                          .backgroundColor(Color.Gray)
+                          .objectFit(ImageFit.Cover)
+                          .width('100%')
+                          .height('100%')
+                      }
                     }
                     .width('100%')
                     .aspectRatio(1)
@@ -108,8 +162,8 @@ export struct PostPage {
 
                     Button({ type: ButtonType.Circle }) {
                       Image(post.isLike ? $r('app.media.like_fill') : $r('app.media.like'))
-                      .width(24)
-                      .height(24)
+                        .width(24)
+                        .height(24)
                     }
                     .backgroundColor(Color.Transparent)
 
@@ -183,7 +237,7 @@ export struct PostPage {
       if (isExpanding && currentRatio > 0) {
         this.getAllFriendsPosts()
       } else if (!isExpanding && currentRatio == 0) {
-        this.posts = []
+        // this.posts = []
       }
     })
     .width('100%')

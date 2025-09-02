@@ -24,8 +24,8 @@ struct Layout {
   pathStack: NavPathStack = AppStorageV2.connect(NavPathStack, 'navStack', () => new NavPathStack())!
   font: Font = new Font();
 
-  // @StorageLink('user')
-  // user: User | undefined = AppStorage.get('user')
+  @StorageLink('user')
+  user: User | undefined = AppStorage.get('user')
 
   aboutToAppear(): void {
     // 注册字体
@@ -33,9 +33,9 @@ struct Layout {
       familyName: '阿里汉仪智能黑体',
       familySrc: $rawfile('fonts/阿里汉仪智能黑体.ttf')
     })
-    // if(!this.user){
-    //   this.pathStack.pushPathByName("Login", null, true);
-    // }
+    if(!this.user){
+      this.pathStack.replacePathByName("Login", null, true);
+    }
   }
 
   tabsData: TabClass[] = [
