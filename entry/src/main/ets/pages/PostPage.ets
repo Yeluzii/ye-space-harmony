@@ -4,6 +4,7 @@ import { Post } from "../network/interface/post"
 import { getAllFriendsPostApi } from "../network/api/post"
 import { User } from "../module/user"
 import { MediaViewer } from "../components/MediaViewer"
+import { MediaViewerParams } from "../module/mediaViewerParams"
 
 @Component
 export struct PostPage {
@@ -55,6 +56,9 @@ export struct PostPage {
     this.getAllFriendsPosts()
   }
 
+  mediaPathInfo: NavPathInfo =
+    AppStorageV2.connect(NavPathInfo, 'mediaPathInfo', () => new NavPathInfo("MediaViewerPage", null))!
+
   @Builder
   postListBuilder() {
     List({ space: 20 }) {
@@ -97,42 +101,53 @@ export struct PostPage {
                       this.currentPostIndex = postIndex
                       this.currentMediaIndex = 0
                       this.showMediaViewer = true
+                      this.mediaPathInfo.param = {
+                        mediaList: post.mediaUrls,
+                        currentIndex: this.currentMediaIndex
+                      } as MediaViewerParams
+                      this.pathStack.pushPath(this.mediaPathInfo, false)
                     })
                     .alt($r('app.media.picture_damage'))
                     .objectFit(ImageFit.Cover)
                     .width('100%')
                     .fillColor(Color.Gray)
                 } else if (post.mediaUrls[0].type === 1) {
-                  // 处理视频
-                  Video({
-                    src: post.mediaUrls[0].url,
-                    posterOptions: {
-                      showFirstFrame: true,
-                    }
-                  })
-                  // 处理点击预览
-                    .onClick(() => {
-                      this.currentPostIndex = postIndex
-                      this.currentMediaIndex = 0
-                      this.showMediaViewer = true
+                  Stack({ alignContent: Alignment.Center }) {
+                    // 处理视频
+                    Video({
+                      src: post.mediaUrls[0].url,
+                      posterOptions: {
+                        showFirstFrame: true,
+                      }
                     })
-                    .onError(() => {
-                      this.toast.showToast({
-                        message: '视频 ' + post.mediaUrls[0].pkId + ' 加载失败',
-                        duration: 2000,
-                        alignment: Alignment.Center
+                      .controls(false)
+                      .onError(() => {
+                        this.toast.showToast({
+                          message: '视频 ' + post.mediaUrls[0].pkId + ' 加载失败',
+                          duration: 2000,
+                          alignment: Alignment.Center
+                        })
                       })
-                    })
-                    .border({
-                      width: 1,
-                      radius: 16,
-                      color: Color.Gray,
-                      style: BorderStyle.Solid
-                    })
-                    .backgroundColor(Color.Gray)
-                    .objectFit(ImageFit.Cover)
-                    .width('100%')
-                    .height('300vp')
+                      .backgroundColor(Color.Gray)
+                      .objectFit(ImageFit.Cover)
+                      .width('100%')
+                      .height('300vp')
+                    Image($r('app.media.play_icon'))
+                      .height('80vp')
+                      .width('80vp')
+                  }
+                  // 处理点击预览
+                  .onClick(() => {
+                    this.currentPostIndex = postIndex
+                    this.currentMediaIndex = 0
+                    this.showMediaViewer = true
+                    this.mediaPathInfo.param = {
+                      mediaList: post.mediaUrls,
+                      currentIndex: this.currentMediaIndex
+                    } as MediaViewerParams
+                    this.pathStack.pushPath(this.mediaPathInfo, false)
+                  })
+                  .width('100%')
                 }
               } else {
                 Grid() {
@@ -147,6 +162,11 @@ export struct PostPage {
                             this.currentPostIndex = postIndex
                             this.currentMediaIndex = index
                             this.showMediaViewer = true
+                            this.mediaPathInfo.param = {
+                              mediaList: post.mediaUrls,
+                              currentIndex: this.currentMediaIndex
+                            } as MediaViewerParams
+                            this.pathStack.pushPath(this.mediaPathInfo, false)
                           })
                           .alt($r('app.media.picture_damage'))
                           .objectFit(ImageFit.Cover)
@@ -154,35 +174,41 @@ export struct PostPage {
                           .height('100%')
                           .fillColor(Color.Gray)
                       } else if (item.type === 1) {
-                        Video({
-                          src: item.url,
-                          posterOptions: {
-                            showFirstFrame: true,
-                          }
-                        })
-                        // 处理点击预览
-                          .onClick(() => {
-                            this.currentPostIndex = postIndex
-                            this.currentMediaIndex = index
-                            this.showMediaViewer = true
+                        Stack({ alignContent: Alignment.Center }) {
+                          Video({
+                            src: item.url,
+                            posterOptions: {
+                              showFirstFrame: true,
+                            }
                           })
-                          .onError(() => {
-                            this.toast.showToast({
-                              message: '视频 ' + item.pkId + ' 加载失败',
-                              duration: 2000,
-                              alignment: Alignment.Center
+                            .controls(false)
+                            .onError(() => {
+                              this.toast.showToast({
+                                message: '视频 ' + item.pkId + ' 加载失败',
+                                duration: 2000,
+                                alignment: Alignment.Center
+                              })
                             })
-                          })
-                          .border({
-                            width: 1,
-                            radius: 16,
-                            color: Color.Gray,
-                            style: BorderStyle.Solid
-                          })
-                          .backgroundColor(Color.Gray)
-                          .objectFit(ImageFit.Cover)
-                          .width('100%')
-                          .height('100%')
+                            .backgroundColor(Color.Gray)
+                            .objectFit(ImageFit.Cover)
+                            .width('100%')
+                            .height('100%')
+                          Image($r('app.media.play_icon'))
+                            .height('50vp')
+                            .width('50vp')
+                        }
+                        // 处理点击预览
+                        .onClick(() => {
+                          this.currentPostIndex = postIndex
+                          this.currentMediaIndex = index
+                          this.showMediaViewer = true
+                          this.mediaPathInfo.param = {
+                            mediaList: post.mediaUrls,
+                            currentIndex: this.currentMediaIndex
+                          } as MediaViewerParams
+                          this.pathStack.pushPath(this.mediaPathInfo, false)
+                        })
+                        .width('100%')
                       }
                     }
                     .width('100%')
@@ -278,13 +304,14 @@ export struct PostPage {
 
   build() {
     Column() {
-      if (this.showMediaViewer) {
-        MediaViewer({
-          currentIndex: this.currentMediaIndex,
-          mediaList: this.posts[this.currentPostIndex].mediaUrls,
-          isVisible: this.showMediaViewer,
-        })
-      }
+      // 作为组件使用，内部使用
+      // if (this.showMediaViewer) {
+      //   MediaViewer({
+      //     currentIndex: this.currentMediaIndex,
+      //     mediaList: this.posts[this.currentPostIndex].mediaUrls,
+      //     isVisible: this.showMediaViewer,
+      //   })
+      // }
       if (this.posts.length === 0) {
         // 空状态
         Column() {

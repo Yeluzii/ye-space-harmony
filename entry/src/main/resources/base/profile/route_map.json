@@ -47,6 +47,14 @@
       "data": {
         "description": "this is FriendDetail"
       }
+    },
+    {
+      "name": "MediaViewerPage",
+      "pageSourceFile": "src/main/ets/pages/MediaViewerPage.ets",
+      "buildFunction": "MediaViewerBuilder",
+      "data": {
+        "description": "this is MediaViewerPage"
+      }
     }
   ]
 }

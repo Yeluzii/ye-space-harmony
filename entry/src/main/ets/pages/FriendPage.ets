@@ -12,7 +12,7 @@ export struct FriendPage {
   })
   @State
   friendPathInfo: NavPathInfo =
-  AppStorageV2.connect(NavPathInfo, 'friendPathInfo', () => new NavPathInfo("FriendDetail", null))!
+    AppStorageV2.connect(NavPathInfo, 'friendPathInfo', () => new NavPathInfo("FriendDetail", null))!
   pathStack: NavPathStack = AppStorageV2.connect(NavPathStack, 'navStack', () => new NavPathStack())!
   private tabsController: TabsController = new TabsController();
   toast: PromptAction = new PromptAction()
@@ -97,7 +97,6 @@ export struct FriendPage {
 
   @State
   categoryTabIndex: number = 0
-
 
   @Builder
   friendListBuilder() {

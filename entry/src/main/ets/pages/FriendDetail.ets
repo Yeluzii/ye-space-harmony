@@ -69,7 +69,8 @@ export struct FriendDetail {
         .width('100%')
 
         Column({ space: 5 }) {
-          Text(this.selectedFriend.note ? this.selectedFriend.note + " (" + this.selectedFriend.nickname + ")" : this.selectedFriend.nickname)
+          Text(this.selectedFriend.note ? this.selectedFriend.note + " (" + this.selectedFriend.nickname + ")" :
+          this.selectedFriend.nickname)
             .fontSize(24)
             .fontWeight(600)
           Text(this.selectedFriend.slogan ? this.selectedFriend.slogan : "----")
@@ -88,10 +89,10 @@ export struct FriendDetail {
         .width('80%')
         .layoutWeight(1)
       }
-      .expandSafeArea([SafeAreaType.SYSTEM], [, SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
       .width('100%')
     }
-    .expandSafeArea([SafeAreaType.SYSTEM], [, SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack
