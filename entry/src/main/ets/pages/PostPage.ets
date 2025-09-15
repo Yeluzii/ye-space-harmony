@@ -1,11 +1,20 @@
-import { AppStorageV2, PromptAction } from "@kit.ArkUI"
+import { AppStorageV2, LoadingDialog, PromptAction } from "@kit.ArkUI"
 import { PostParams } from "../module/postParams"
 import { Post } from "../network/interface/post"
 import { getAllFriendsPostApi } from "../network/api/post"
 import { User } from "../module/user"
+import { MediaViewer } from "../components/MediaViewer"
 
 @Component
 export struct PostPage {
+  @State showMediaViewer: boolean = false
+  @State currentMediaIndex: number = 0
+  @State currentPostIndex: number = 0
+  loadingDialog: CustomDialogController = new CustomDialogController({
+    builder: LoadingDialog({
+      content: "正在加载..."
+    })
+  })
   toast: PromptAction = new PromptAction()
   @StorageLink('user')
   user: User | undefined = AppStorage.get('user')
@@ -26,6 +35,7 @@ export struct PostPage {
   posts: Post.FriendsPost[] = []
   getAllFriendsPosts = async () => {
     try {
+      this.loadingDialog.open()
       if (this.user?.accessToken) {
         const res = await getAllFriendsPostApi(this.reqFriendPostsParams)
         this.posts = res.data.list
@@ -36,13 +46,19 @@ export struct PostPage {
         duration: 2000,
         alignment: Alignment.Center
       })
+    } finally {
+      this.loadingDialog.close()
     }
+  }
+
+  aboutToAppear(): void {
+    this.getAllFriendsPosts()
   }
 
   @Builder
   postListBuilder() {
     List({ space: 20 }) {
-      ForEach(this.posts, (post: Post.FriendsPost) => {
+      ForEach(this.posts, (post: Post.FriendsPost, postIndex: number) => {
         ListItem() {
           Column({ space: 5 }) {
             Row({ space: 10 }) {
@@ -66,6 +82,7 @@ export struct PostPage {
 
             Column() {
               Text(post.content)
+                .margin({ bottom: 10 })
                 .onClick(() => {
                   this.pathInfo.param = post
                   this.pathStack.pushPath(this.pathInfo, true)
@@ -75,6 +92,12 @@ export struct PostPage {
                 // 处理图片
                 if (post.mediaUrls[0].type === 0) {
                   Image(post.mediaUrls[0].url)
+                  // 处理点击预览
+                    .onClick(() => {
+                      this.currentPostIndex = postIndex
+                      this.currentMediaIndex = 0
+                      this.showMediaViewer = true
+                    })
                     .alt($r('app.media.picture_damage'))
                     .objectFit(ImageFit.Cover)
                     .width('100%')
@@ -83,7 +106,16 @@ export struct PostPage {
                   // 处理视频
                   Video({
                     src: post.mediaUrls[0].url,
+                    posterOptions: {
+                      showFirstFrame: true,
+                    }
                   })
+                  // 处理点击预览
+                    .onClick(() => {
+                      this.currentPostIndex = postIndex
+                      this.currentMediaIndex = 0
+                      this.showMediaViewer = true
+                    })
                     .onError(() => {
                       this.toast.showToast({
                         message: '视频 ' + post.mediaUrls[0].pkId + ' 加载失败',
@@ -104,12 +136,18 @@ export struct PostPage {
                 }
               } else {
                 Grid() {
-                  ForEach(post.mediaUrls, (item: Post.imgUrls) => {
+                  ForEach(post.mediaUrls, (item: Post.imgUrls, index: number) => {
                     GridItem({
                       style: GridItemStyle.PLAIN
                     }) {
                       if (item.type === 0) {
                         Image(item.url)
+                        // 处理点击预览
+                          .onClick(() => {
+                            this.currentPostIndex = postIndex
+                            this.currentMediaIndex = index
+                            this.showMediaViewer = true
+                          })
                           .alt($r('app.media.picture_damage'))
                           .objectFit(ImageFit.Cover)
                           .width('100%')
@@ -118,7 +156,16 @@ export struct PostPage {
                       } else if (item.type === 1) {
                         Video({
                           src: item.url,
+                          posterOptions: {
+                            showFirstFrame: true,
+                          }
                         })
+                        // 处理点击预览
+                          .onClick(() => {
+                            this.currentPostIndex = postIndex
+                            this.currentMediaIndex = index
+                            this.showMediaViewer = true
+                          })
                           .onError(() => {
                             this.toast.showToast({
                               message: '视频 ' + item.pkId + ' 加载失败',
@@ -231,15 +278,42 @@ export struct PostPage {
 
   build() {
     Column() {
-      this.postListBuilder()
-    }
-    .onVisibleAreaChange([0, 1], (isExpanding, currentRatio) => {
-      if (isExpanding && currentRatio > 0) {
-        this.getAllFriendsPosts()
-      } else if (!isExpanding && currentRatio == 0) {
-        // this.posts = []
+      if (this.showMediaViewer) {
+        MediaViewer({
+          currentIndex: this.currentMediaIndex,
+          mediaList: this.posts[this.currentPostIndex].mediaUrls,
+          isVisible: this.showMediaViewer,
+        })
       }
-    })
+      if (this.posts.length === 0) {
+        // 空状态
+        Column() {
+          Image($r('app.media.empty'))
+            .width(184)
+            .height(152)
+            .margin({ bottom: 16 })
+          Text('暂无数据')
+            .fontSize(16)
+            .fontColor('#999')
+          Button('刷新试试？')
+            .margin({ top: 20 })
+            .onClick(() => this.getAllFriendsPosts())
+        }
+        .width('100%')
+        .height('100%')
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+      } else {
+        this.postListBuilder()
+      }
+    }
+    // .onVisibleAreaChange([0, 1], (isExpanding, currentRatio) => {
+    //   if (isExpanding && currentRatio > 0) {
+    //     this.getAllFriendsPosts()
+    //   } else if (!isExpanding && currentRatio == 0) {
+    //     // this.posts = []
+    //   }
+    // })
     .width('100%')
     .height('100%')
   }

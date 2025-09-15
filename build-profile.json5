@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "storeFile": "D:/Harmony/key/yeSpace.p12",
+          "storePassword": "0000001B90BC54DDBC2ED1CDD8BF97BF324E5DFE1767E2A001DD1F52F0F8151DC07541CB3B2E09084A8EE9",
+          "keyAlias": "yeSpace",
+          "keyPassword": "0000001BD61AF1980087585F5E70A666FBCE49EA9B20728951B5DB94E36924839F67399FF8D15805DFEB2B",
+          "signAlg": "SHA256withECDSA",
+          "profile": "D:/Harmony/p7b/yeSpaceRelease.p7b",
+          "certpath": "D:/Harmony/cer/yeSpace.cer"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",

@@ -28,7 +28,8 @@ export struct Mine {
     Column({ space: 5 }) {
       Column() {
         Stack({ alignContent: Alignment.Bottom }) {
-          Image(this.user?.bgImg ?? $r('app.media.user_background'))
+          Image(this.user?.bgImg)
+            .alt($r('app.media.user_background'))
             .objectFit(ImageFit.Cover)
             .height('100%')
             .width('100%')

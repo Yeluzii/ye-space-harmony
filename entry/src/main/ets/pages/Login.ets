@@ -1,6 +1,6 @@
 import { Login as LoginModel } from "../network/interface"
 import { passwordLoginApi, codeLoginApi, sendCodeApi } from "../network/api/login"
-import { PromptAction } from '@kit.ArkUI'
+import { LoadingDialog, PromptAction } from '@kit.ArkUI'
 import { User } from "../module/user"
 
 @Builder
@@ -10,6 +10,11 @@ export function LoginBuilder() {
 
 @Component
 struct Login {
+  operatingDialog: CustomDialogController = new CustomDialogController({
+    builder: LoadingDialog({
+      content: "正在登录..."
+    })
+  })
   pathStack: NavPathStack = new NavPathStack()
   @State
   passwordLoginForm: LoginModel.ReqPasswordLoginParams = {
@@ -29,6 +34,7 @@ struct Login {
   // 账号（手机号）密码登录
   passwordLogin = async () => {
     try {
+      this.operatingDialog.open()
       const res = await passwordLoginApi(this.passwordLoginForm)
       this.user = new User(res.data.pkId, res.data.phone, res.data.nickname, res.data.slogan, res.data.avatar,
         res.data.createTime, res.data.tips, res.data.accessToken, res.data.lastLoginTime, res.data.bgImg)
@@ -40,16 +46,20 @@ struct Login {
       })
       this.pathStack.pop()
     } catch (e) {
+      console.log("登录错误详情：", JSON.stringify(e))
       this.toast.showToast({
         message: "登录失败",
         duration: 2000,
         alignment: Alignment.Top
       })
+    }finally {
+      this.operatingDialog.close()
     }
   }
   // 手机号验证码登录
   codeLogin = async () => {
     try {
+      this.operatingDialog.open()
       const res = await codeLoginApi(this.codeLoginForm)
       this.user = new User(res.data.pkId, res.data.phone, res.data.nickname, res.data.slogan, res.data.avatar,
         res.data.createTime, res.data.tips, res.data.accessToken, res.data.lastLoginTime, res.data.bgImg)
@@ -73,6 +83,8 @@ struct Login {
         duration: 2000,
         alignment: Alignment.Top
       })
+    }finally {
+      this.operatingDialog.close()
     }
   }
   @State

@@ -1,13 +1,18 @@
 import { Friend } from '../network/interface/friend';
 import { getFriendCategoriesApi, getFriendListApi } from '../network/api/friend';
-import { AppStorageV2, PromptAction } from '@kit.ArkUI';
+import { AppStorageV2, LoadingDialog, PromptAction } from '@kit.ArkUI';
 import { User } from '../module/user';
 
 @Component
 export struct FriendPage {
+  loadingDialog: CustomDialogController = new CustomDialogController({
+    builder: LoadingDialog({
+      content: "正在加载..."
+    })
+  })
   @State
   friendPathInfo: NavPathInfo =
-    AppStorageV2.connect(NavPathInfo, 'friendPathInfo', () => new NavPathInfo("FriendDetail", null))!
+  AppStorageV2.connect(NavPathInfo, 'friendPathInfo', () => new NavPathInfo("FriendDetail", null))!
   pathStack: NavPathStack = AppStorageV2.connect(NavPathStack, 'navStack', () => new NavPathStack())!
   private tabsController: TabsController = new TabsController();
   toast: PromptAction = new PromptAction()
@@ -17,6 +22,7 @@ export struct FriendPage {
   categoryList: Friend.ResFriendCategories[] = []
   getCategories = async () => {
     try {
+      this.loadingDialog.open()
       if (this.user?.accessToken) {
         const res = await getFriendCategoriesApi()
         this.categoryList = res.data
@@ -33,6 +39,8 @@ export struct FriendPage {
         duration: 2000,
       })
       console.log(e)
+    } finally {
+      this.loadingDialog.close()
     }
   }
   @State
@@ -46,8 +54,7 @@ export struct FriendPage {
   friendList: Friend.FriendInfo[] = []
   getAllFriends = async () => {
     try {
-      // 双向绑定，回到 全部好友标签页
-      this.categoryTabIndex = 0
+      this.loadingDialog.open()
       if (this.user?.accessToken) {
         const res = await getFriendListApi({
           page: this.reqFriendListParams.page,
@@ -62,10 +69,13 @@ export struct FriendPage {
         duration: 2000,
         alignment: Alignment.Top
       })
+    } finally {
+      this.loadingDialog.close()
     }
   }
   getFriendList = async () => {
     try {
+      this.loadingDialog.open()
       if (this.user?.accessToken) {
         const res = await getFriendListApi(this.reqFriendListParams)
         this.friendList = res.data.list
@@ -76,6 +86,8 @@ export struct FriendPage {
         duration: 2000,
         alignment: Alignment.Top
       })
+    } finally {
+      this.loadingDialog.close()
     }
   }
 
@@ -85,6 +97,7 @@ export struct FriendPage {
 
   @State
   categoryTabIndex: number = 0
+
 
   @Builder
   friendListBuilder() {
@@ -152,12 +165,14 @@ export struct FriendPage {
               size: 20
             }
           })
-          .onEditChange((isEditing: boolean) => {
-            // 不在编辑状态并且关键词为空时，回到全部好友标签页并获取全部好友
-            if (!isEditing && this.reqFriendListParams.keywords?.trim() === '') {
-              this.getAllFriends()
-            }
-          })
+          // .onEditChange((isEditing: boolean) => {
+          //   // 不在编辑状态并且关键词为空时，回到全部好友标签页并获取全部好友
+          //   if (!isEditing && this.reqFriendListParams.keywords?.trim() === '') {
+          //     // 双向绑定，回到 全部好友标签页
+          //     this.categoryTabIndex = 0
+          //     this.getAllFriends()
+          //   }
+          // })
           .onSubmit(() => {
             if (this.categoryTabIndex === 0) {
               this.getAllFriends()
@@ -244,16 +259,16 @@ export struct FriendPage {
       .vertical(false)
       .barMode(BarMode.Scrollable)
     }
-    .onVisibleAreaChange([0, 1], (isExpanding, currentRatio) => {
-      if (isExpanding && currentRatio > 0) {
-        // 内容出现，执行获取好友分组列表逻辑
-        this.getCategories()
-      } else if (!isExpanding && currentRatio == 0) {
-        // 内容消失的相关逻辑
-        this.categoryList = []
-        this.friendList = []
-      }
-    })
+    // .onVisibleAreaChange([0, 1], (isExpanding, currentRatio) => {
+    //   if (isExpanding && currentRatio > 0) {
+    //     // 内容出现，执行获取好友分组列表逻辑
+    //     this.getCategories()
+    //   } else if (!isExpanding && currentRatio == 0) {
+    //     // 内容消失的相关逻辑
+    //     this.categoryList = []
+    //     this.friendList = []
+    //   }
+    // })
     .width('100%')
     .height('100%')
     .padding({
