@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "storeFile": "D:/Harmony/key/yeSpace.p12",
-          "storePassword": "0000001B90BC54DDBC2ED1CDD8BF97BF324E5DFE1767E2A001DD1F52F0F8151DC07541CB3B2E09084A8EE9",
+          "storeFile": "/Users/yeluzi/Harmony/p12/yeSpace.p12",
+          "storePassword": "0000001BDB2BC691371FC69B52F18441C016A1AC80AED9C9E5D3C88ED87C15B767BBA51662E9248E21C8D1",
           "keyAlias": "yeSpace",
-          "keyPassword": "0000001BD61AF1980087585F5E70A666FBCE49EA9B20728951B5DB94E36924839F67399FF8D15805DFEB2B",
+          "keyPassword": "0000001BD569957D8AC8C6F7238B9346D3DB1C2C96C6E6644D81CA5AF1833EC2491C1525D419F82D4887FA",
           "signAlg": "SHA256withECDSA",
-          "profile": "D:/Harmony/p7b/yeSpaceRelease.p7b",
-          "certpath": "D:/Harmony/cer/yeSpace.cer"
+          "profile": "/Users/yeluzi/Harmony/p7b/yeSpaceRelease.p7b",
+          "certpath": "/Users/yeluzi/Harmony/cer/yeSpace.cer"
         }
       }
     ],

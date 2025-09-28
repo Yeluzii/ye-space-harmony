@@ -5,7 +5,7 @@ import { User } from "../../module/user";
 export const axiosInstance = axios.create(
   {
     // baseURL: 'http://10.20.222.197:8082',
-    baseURL: 'https://ychen.fun',
+    baseURL: 'http://115.29.200.66:8082',
     timeout: 10000,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8',
